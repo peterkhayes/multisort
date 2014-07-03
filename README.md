@@ -7,9 +7,9 @@ A small library for sorting arrays by multiple criteria.
 
   npm install multitest --save
 
-## Usage
+## Basic Usage
 
-  // Array to sort.
+  ```javascript
   var input = [
     {firstName: "Kate", "lastName": "Bush"},
     {firstName: "George", lastName: "Bush", "Suffix": "Jr"},
@@ -17,21 +17,33 @@ A small library for sorting arrays by multiple criteria.
     {firstName: "George", lastName: "Bush", "Suffix": "Sr"},
   ];
 
-  // Any number of criteria - can be functions or strings matching properties.
   var criteria = [
     'firstName',
-    'lastName.length',
-    function(person) {return person.suffix === "Sr" ? 1 : 0}
+    '~lastName.length',
+    function(person) { return person.suffix.charCodeAt(0) }
   ];
 
   multisort(inputArray, criteria)
+  
   // input is now:
   // [
+  //  {firstName: "George", lastName: "Orwell"},
   //  {firstName: "George", lastName: "Bush", "Suffix": "Jr"},
   //  {firstName: "George", lastName: "Bush", "Suffix": "Sr"},
-  //  {firstName: "George", lastName: "Orwell"},
   //  {firstName: "Kate", "lastName": "Bush"},
   // ];
+  ```
+
+## Features
+
+  **Criteria types:**
+  
+  * Function - applied to each element; sort uses < and > on the results of the function.
+  * String - uses < and > on the property picked out by the string.  Allows nested properties.
+  * !String or ~String - like above, but sorted in descending order
+  * String(arg1, arg2...) - picks out the property and calls it as a function with the given args.
+
+
 
 ## Tests
 
