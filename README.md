@@ -26,7 +26,7 @@ A small library for sorting arrays by multiple criteria.
   multisort(inputArray, criteria)
 
   // input is now sorted by firstName (ascending), then lastName.length (descending),
-  // and finally suffix.charCodeAt(1):
+  // and finally suffix.charCodeAt, called with 1 as the argument:
   // [
   //  {firstName: "George", lastName: "Orwell"},
   //  {firstName: "George", lastName: "Bush", "Suffix": "Senior"},
