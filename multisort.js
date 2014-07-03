@@ -1,17 +1,38 @@
 module.exports = function(toSort, sortings) {
+  // Allow partial application.
+  if (arguments[1] == null) {
+    sortings = toSort;
+    toSort = null;
+  }
+
   if (!Array.isArray(sortings)) {
     sortings = [sortings]
   }
 
   var comparators = sortings.map(makeComparator);
 
-  return toSort.sort(function(a, b) {
-    for (var i = 0, len = sortings.length; i < len; i++) {
-      var comparatorOutput = comparators[i](a, b);
-      if (comparatorOutput !== 0) return comparatorOutput;
+  // Return partially applied version if no array is passed to sort.
+  if (toSort == null) {
+    return function(toSort) {
+      return toSort.sort(function(a, b) {
+        for (var i = 0, len = sortings.length; i < len; i++) {
+          var comparatorOutput = comparators[i](a, b);
+          if (comparatorOutput !== 0) return comparatorOutput;
+        }
+        return 0;
+      });
     }
-    return 0;
-  });
+  // Sort now.
+  } else {  
+    return toSort.sort(function(a, b) {
+      for (var i = 0, len = sortings.length; i < len; i++) {
+        var comparatorOutput = comparators[i](a, b);
+        if (comparatorOutput !== 0) return comparatorOutput;
+      }
+      return 0;
+    });
+  }
+
 };
 
 var makeComparator = function(input) {

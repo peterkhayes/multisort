@@ -232,7 +232,7 @@ describe("Multisort Tests -", function() {
   });
 
 
-  describe("multiple criteria", function() {
+  describe("multiple criteria -", function() {
     it("three mathematical functions", function() {
       var input = [8, 7, 6, 5, 4, 3, 2, 1];
       multisort(input, [
@@ -251,6 +251,23 @@ describe("Multisort Tests -", function() {
       ]);
       assertObjectEquals(hostIds(), [3, 2, 5, 1, 4])
     });
+  });
 
+  describe("can be partially applied", function() {
+    it("three mathematical functions", function() {
+      var sorter = multisort([
+        function(a) {return a % 2},
+        function(a) {return a % 3},
+        function(a) {return a}
+      ]);
+
+      var input1 = [8, 7, 6, 5, 4, 3, 2, 1];
+      sorter(input1);
+      assertObjectEquals(input1, [6, 4, 2, 8, 3, 1, 7, 5]);
+
+      var input2 = [1, 5, 10, 25, 50, 100];
+      sorter(input2);
+      assertObjectEquals(input2, [10, 100, 50, 1, 25, 5]);
+    });
   });
 });

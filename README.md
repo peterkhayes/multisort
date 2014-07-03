@@ -50,6 +50,25 @@ A small library for sorting arrays by multiple criteria.
   // [6, 4, 2, 8, 3, 1, 7, 5]
   ```
 
+## Partial Application
+
+  ```javascript
+  // Passing a single argument makes a sorting function that can then be applied to lists.
+  var sortByMod2AndMod3 = multisort([
+    function(a) {return a % 2},
+    function(a) {return a % 3},
+    function(a) {return a}
+  ]);
+
+  var input1 = [8, 7, 6, 5, 4, 3, 2, 1];
+  sortByMod2AndMod3(input1);
+  // input1 is [6, 4, 2, 8, 3, 1, 7, 5]
+
+  var input2 = [1, 5, 10, 25, 50, 100];
+  sortByMod2AndMod3(input2);
+  // input2 is [10, 100, 50, 1, 25, 5]
+  ```
+
 ## Features
 
   **Criteria types:**
