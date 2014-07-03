@@ -220,6 +220,16 @@ describe("Multisort Tests -", function() {
       assertObjectEquals(hostIds(), [1, 4, 5, 3, 2]);
     });
 
+    it("existential criterion", function() {
+      var input = [{prop: true}, {prop: undefined}, {prop: false}, {prop: null}];
+      multisort(input, 'prop?');
+      assertObjectEquals(input, [{prop: undefined}, {prop: null}, {prop: true}, {prop: false}])
+
+      input = [{prop: true}, {prop: undefined}, {prop: false}, {prop: null}];
+      multisort(input, '!prop?');
+      assertObjectEquals(input, [{prop: true}, {prop: false}, {prop: undefined}, {prop: null}])
+    });
+
     it("functional property (without arguments)", function() {
       multisort(gameShowHosts, "say.name()");
       assertObjectEquals(hostIds(), [3, 4, 1, 5, 2]);
@@ -228,6 +238,21 @@ describe("Multisort Tests -", function() {
     it("functional property (with arguments)", function() {
       multisort(gameShowHosts, "~say.catchphrase(3)");
       assertObjectEquals(hostIds(), [4, 3, 2, 5, 1]);
+    });
+
+    it("functional property (existential)", function() {
+      var input = [{func: function() {return true}}, {func: function() {return null}}];
+      multisort(input, "func()?");
+      // Hard to compare functions directly.
+      var output = input.map(function(i){return i.func()});
+      assertObjectEquals(output, [null, true]);
+
+      // func()? is not the same as func?
+      var input = [{func: function() {return true}}, {func: function() {return null}}];
+      multisort(input, "func?");
+      // Hard to compare functions directly.
+      var output = input.map(function(i){return i.func()});
+      assertObjectEquals(output, [true, null]);
     });
   });
 
@@ -251,6 +276,7 @@ describe("Multisort Tests -", function() {
       ]);
       assertObjectEquals(hostIds(), [3, 2, 5, 1, 4])
     });
+
   });
 
   describe("can be partially applied", function() {

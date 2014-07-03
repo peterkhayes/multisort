@@ -77,6 +77,7 @@ A small library for sorting arrays by multiple criteria.
   * String - uses < and > on the property picked out by the string.  Allows nested properties.
   * !String or ~String - like above, but sorted in descending order
   * String(arg1, arg2...) - picks out the property and calls it as a function with the given args.
+  * String? - existential operator, tests if property is null or undefined.
 
 
 
