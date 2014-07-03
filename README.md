@@ -36,18 +36,18 @@ A small library for sorting arrays by multiple criteria.
   ```
 
   ```javascript
-      var input = [8, 7, 6, 5, 4, 3, 2, 1];
+  var input = [8, 7, 6, 5, 4, 3, 2, 1];
 
-      var criteria = [
-        function(a) {return a % 2},
-        function(a) {return a % 3},
-        function(a) {return a}
-      ];
+  var criteria = [
+    function(a) {return a % 2},
+    function(a) {return a % 3},
+    function(a) {return a}
+  ];
 
-      multisort(input, criteria);
+  multisort(input, criteria);
 
-      // Input is now:
-      // [6, 4, 2, 8, 3, 1, 7, 5]
+  // input is now:
+  // [6, 4, 2, 8, 3, 1, 7, 5]
   ```
 
 ## Features
