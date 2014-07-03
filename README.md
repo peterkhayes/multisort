@@ -5,7 +5,7 @@ A small library for sorting arrays by multiple criteria.
 
 ## Installation
 
-  npm install multitest --save
+  npm install multisort --save
 
 ## Basic Usage
 
@@ -19,12 +19,12 @@ A small library for sorting arrays by multiple criteria.
 
   var criteria = [
     'firstName',
-    '~lastName.length',
+    '~lastName.length', // ! or ~ sorts descending
     function(person) { return person.suffix.charCodeAt(0) }
   ];
 
   multisort(inputArray, criteria)
-  
+
   // input is now:
   // [
   //  {firstName: "George", lastName: "Orwell"},
@@ -37,7 +37,7 @@ A small library for sorting arrays by multiple criteria.
 ## Features
 
   **Criteria types:**
-  
+
   * Function - applied to each element; sort uses < and > on the results of the function.
   * String - uses < and > on the property picked out by the string.  Allows nested properties.
   * !String or ~String - like above, but sorted in descending order
