@@ -12,26 +12,42 @@ A small library for sorting arrays by multiple criteria.
   ```javascript
   var input = [
     {firstName: "Kate", "lastName": "Bush"},
-    {firstName: "George", lastName: "Bush", "Suffix": "Jr"},
+    {firstName: "George", lastName: "Bush", "Suffix": "Junior"},
     {firstName: "George", lastName: "Orwell"},
-    {firstName: "George", lastName: "Bush", "Suffix": "Sr"},
+    {firstName: "George", lastName: "Bush", "Suffix": "Senior"},
   ];
 
   var criteria = [
     'firstName',
-    '~lastName.length', // ! or ~ sorts descending
-    function(person) { return person.suffix.charCodeAt(0) }
+    '~lastName.length',
+    'suffix.charCodeAt(1)'
   ];
 
   multisort(inputArray, criteria)
 
-  // input is now:
+  // input is now sorted by firstName (ascending), then lastName.length (descending),
+  // and finally suffix.charCodeAt(1):
   // [
   //  {firstName: "George", lastName: "Orwell"},
-  //  {firstName: "George", lastName: "Bush", "Suffix": "Jr"},
-  //  {firstName: "George", lastName: "Bush", "Suffix": "Sr"},
+  //  {firstName: "George", lastName: "Bush", "Suffix": "Senior"},
+  //  {firstName: "George", lastName: "Bush", "Suffix": "Junior"},
   //  {firstName: "Kate", "lastName": "Bush"},
   // ];
+  ```
+
+  ```javascript
+      var input = [8, 7, 6, 5, 4, 3, 2, 1];
+
+      var criteria = [
+        function(a) {return a % 2},
+        function(a) {return a % 3},
+        function(a) {return a}
+      ];
+
+      multisort(input, criteria);
+
+      // Input is now:
+      // [6, 4, 2, 8, 3, 1, 7, 5]
   ```
 
 ## Features
