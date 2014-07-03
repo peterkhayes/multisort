@@ -33,6 +33,7 @@ describe("Multisort Tests -", function() {
           last: "Barker"
         },
         retired: true,
+        fame: 2,
         show: "The Price is Right",
         say: {
           name: function() {
@@ -55,6 +56,7 @@ describe("Multisort Tests -", function() {
           last: "Philbin"
         },
         retired: true,
+        fame: 3,
         show: "Who Wants to be a Millionaire",
         say: {
           name: function() {
@@ -76,6 +78,7 @@ describe("Multisort Tests -", function() {
           first: "Alex",
           last: "Trebek"
         },
+        fame: 3,
         show: "Jeopardy",
         say: {
           name: function() {
@@ -98,6 +101,7 @@ describe("Multisort Tests -", function() {
           last: "Bailey"
         },
         show: "Cash Cab",
+        fame: 1,
         retired: true,
         say: {
           name: function() {
@@ -119,6 +123,7 @@ describe("Multisort Tests -", function() {
           first: "Pat",
           last: "Sajak"
         },
+        fame: 2,
         show: "Wheel of Fortune",
         say: {
           name: function() {
@@ -226,4 +231,26 @@ describe("Multisort Tests -", function() {
     });
   });
 
+
+  describe("multiple criteria", function() {
+    it("three mathematical functions", function() {
+      var input = [8, 7, 6, 5, 4, 3, 2, 1];
+      multisort(input, [
+        function(a) {return a % 2},
+        function(a) {return a % 3},
+        function(a) {return a}
+      ]);
+      assertObjectEquals(input, [6, 4, 2, 8, 3, 1, 7, 5]);
+    });
+
+    it("several nested properties", function() {
+      multisort(gameShowHosts, [
+        "~fame",
+        "retired",
+        "name.last"
+      ]);
+      assertObjectEquals(hostIds(), [3, 2, 5, 1, 4])
+    });
+
+  });
 });

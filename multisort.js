@@ -7,7 +7,7 @@ module.exports = function(toSort, sortings) {
 
   return toSort.sort(function(a, b) {
     for (var i = 0, len = sortings.length; i < len; i++) {
-      var comparatorOutput = comparators[0](a, b);
+      var comparatorOutput = comparators[i](a, b);
       if (comparatorOutput !== 0) return comparatorOutput;
     }
     return 0;
