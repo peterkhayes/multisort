@@ -76,21 +76,9 @@ var makeStringComparator = function(input) {
     input = input.slice(0, -1);
   }
 
-  if (/[^\(\r\n]*\([^\(\r\n]*\)$/.test(input)) {
-    var indexOfOpenParenthesis = input.indexOf("(");
-    var args = JSON.parse("[" + input.slice(indexOfOpenParenthesis+1, -1) + "]");
-    input = input.slice(0, indexOfOpenParenthesis);
-  }
-
   return function(a, b) {
     var aValue = nestedProperty(a, input);
     var bValue = nestedProperty(b, input);
-
-    // If key is a function...
-    if (args) {
-      aValue = aValue.apply(this, args);
-      bValue = bValue.apply(this, args);
-    }
 
     // If our string ended with "?"
     if (existential) {
@@ -125,7 +113,21 @@ var nestedProperty = function(obj, path) {
   var path = path.split(".")
   var current = obj;
   while (path.length) {
-    current = current[path.shift()];
+    var nextKey = path.shift()
+    
+    if (/[^\(\r\n]*\([^\(\r\n]*\)$/.test(nextKey)) {
+      var indexOfOpenParenthesis = nextKey.indexOf("(");
+      var args = JSON.parse("[" + nextKey.slice(indexOfOpenParenthesis+1, -1) + "]");
+      nextKey = nextKey.slice(0, indexOfOpenParenthesis);
+    }
+
+    current = current[nextKey];
+    
+    // If key is a function...
+    if (args) {
+      current = current.apply(null, args);
+    }
+
     if (current == null) return null;
   }
   return current;

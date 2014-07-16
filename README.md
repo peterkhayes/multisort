@@ -11,27 +11,27 @@ A small library for sorting arrays by multiple criteria.
 
   ```javascript
   var input = [
-    {firstName: "Kate", "lastName": "Bush"},
-    {firstName: "George", lastName: "Bush", "Suffix": "Junior"},
+    {firstName: "Kate", lastName: "Bush"},
+    {firstName: "George", lastName: "Bush", suffix: "Junior"},
     {firstName: "George", lastName: "Orwell"},
-    {firstName: "George", lastName: "Bush", "Suffix": "Senior"},
+    {firstName: "George", lastName: "Bush", suffix: "Senior"},
   ];
 
   var criteria = [
     'firstName',
     '~lastName.length',
-    'suffix.charCodeAt(1)'
+    'suffix.charAt(1)'
   ];
 
   multisort(inputArray, criteria)
 
   // input is now sorted by firstName (ascending), then lastName.length (descending),
-  // and finally suffix.charCodeAt, called with 1 as the argument:
+  // and finally suffix.charAt, called with 1 as the argument:
   // [
   //  {firstName: "George", lastName: "Orwell"},
-  //  {firstName: "George", lastName: "Bush", "Suffix": "Senior"},
-  //  {firstName: "George", lastName: "Bush", "Suffix": "Junior"},
-  //  {firstName: "Kate", "lastName": "Bush"},
+  //  {firstName: "George", lastName: "Bush", suffix: "Senior"},
+  //  {firstName: "George", lastName: "Bush", suffix: "Junior"},
+  //  {firstName: "Kate", lastName: "Bush"},
   // ];
   ```
 
@@ -73,11 +73,11 @@ A small library for sorting arrays by multiple criteria.
 
   **Criteria types:**
 
-  * Function - applied to each element; sort uses < and > on the results of the function.
-  * String - uses < and > on the property picked out by the string.  Allows nested properties.
-  * !String or ~String - like above, but sorted in descending order
-  * String(arg1, arg2...) - picks out the property and calls it as a function with the given args.
-  * String? - existential operator, tests if property is null or undefined.
+  * __Function__: Applies the given function to each element, and the return values are sorted in ascending order, using < and >.
+  * __String__: Picks out the property indicated by the string, and sorts in ascending order, using < and >.  Nested properties can be accessed with dot syntax, as in "property.subproperty.subsubproperty"
+  * __!String__ or __~String__: As above, but sorted in descending order.  This works with the functional and existential operators below.
+  * __String(arg1, arg2...)__: As above, but calls the indicated property as a function with the given arguments.  Arguments are split by commas, trimmed, and parsed with JSON.parse.
+  * __String?__: As above, tests whether the property is null or undefined.  Items without the property are sorted before items with it.
 
 
 
