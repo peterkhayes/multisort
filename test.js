@@ -240,6 +240,27 @@ describe("Multisort Tests -", function() {
       assertObjectEquals(hostIds(), [4, 3, 2, 5, 1]);
     });
 
+    it("toString functional property to sort strings alphabetically", function() {
+      var input = [{name: "dog"}, {name: "Dog"}, {name: "DOG"}, {name: "demon"}, {name: "Demon"}, {name: "DEMON"}];
+      // multisort(input, 'name');
+      // assertObjectEquals(input, [{name: "DEMON"},{name: "DOG"},{name: "Demon"},{name: "Dog"},{name: "demon"},{name: "dog"}]);
+      multisort(input, 'name.toLowerCase()')
+      for (var i = 0; i < 6; i++) {
+        if (i < 3) {
+          expect(input[i].name.toLowerCase()).to.be("demon");
+        } else {
+          expect(input[i].name.toLowerCase()).to.be("dog");
+        }
+      }
+    }); 
+
+    it("root-level functional property", function() {
+      var input = ["dog", "Dog", "DOG", "demon", "Demon", "DEMON"];
+      multisort(input, 'toLowerCase()')
+      input = input.map(function(elem) {return elem.toLowerCase()})
+      assertObjectEquals(input, ["demon", "demon", "demon", "dog", "dog", "dog"]);
+    });
+
     it("functional property (existential)", function() {
       var input = [{func: function() {return true}}, {func: function() {return null}}];
       multisort(input, "func()?");

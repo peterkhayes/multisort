@@ -9,108 +9,115 @@ module.exports = function(toSort, sortings) {
     sortings = [sortings]
   }
 
-  var comparators = sortings.map(makeComparator);
+  // Turn each sorting into a function that evalutes an item.
+  var evaluators = sortings.map(makeEvaluator);
+  
 
-  // Return partially applied version if no array is passed to sort.
+  // Allow partial application.
   if (toSort == null) {
     return function(toSort) {
-      return toSort.sort(function(a, b) {
-        for (var i = 0, len = sortings.length; i < len; i++) {
-          var comparatorOutput = comparators[i](a, b);
-          if (comparatorOutput !== 0) return comparatorOutput;
-        }
-        return 0;
-      });
+      return module.exports(toSort, sortings)
     }
-  // Otherwise sort now.
-  } else {  
-    return toSort.sort(function(a, b) {
-      for (var i = 0, len = sortings.length; i < len; i++) {
-        var comparatorOutput = comparators[i](a, b);
-        if (comparatorOutput !== 0) return comparatorOutput;
-      }
-      return 0;
-    });
   }
+
+  // For each item, decorate it with the results of each evaluator.
+  evaluateItems(toSort, evaluators);
+
+  // Sort by the decorated results.
+  toSort.sort(function(a, b) {
+    var aValues = a.values;
+    var bValues = b.values;
+    for (var i = 0, len = evaluators.length; i < len; i++) {
+      var invert = evaluators[i].invert;
+      var aValue = aValues[i];
+      var bValue = bValues[i];
+      
+      if (aValue > bValue) {
+        return invert ? -1 : 1;
+      } else if (bValue > aValue) {
+        return invert ? 1 : -1;
+      }
+    }
+    return 0;
+  });
+
+  // Undecorate each item to return cleanly.
+  revertItems(toSort);
+  return toSort
 
 };
 
-var makeComparator = function(input) {
+var evaluateItems = function(input, evaluators) {
+  for (var i = 0, len = input.length; i < len; i++) {
+    var item = input[i];
+    input[i] = {
+      item: item,
+      values: evaluators.map(function(evaluator) {return evaluator.func(item)})
+    }
+  }
+}
+
+var revertItems = function(input) {
+  for (var i = 0, len = input.length; i < len; i++) {
+    input[i] = input[i].item;
+  }
+}
+
+var makeEvaluator = function(input) {
   if (isFunction(input)) {
-    return makeFunctionComparator(input);
+    return makeFunctionalEvaluator(input);
   } else if (isString(input)) {
-    return makeStringComparator(input);
+    return makeStringEvaluator(input);
   } else if (isNumber(input)) {
-    return makeNumericalComparator(input);
+    return makeNumericalEvaluator(input);
   }
   throw "Improper input for comparator!"
 };
 
-var makeFunctionComparator = function(input) {
-  return function(a, b) {
-    var aValue = input(a);
-    var bValue = input(b);
-
-    if (aValue > bValue) {
-      return 1;
-    } else if (bValue > aValue) {
-      return -1;
-    } else {
-      return 0;
-    }
-  };
+var makeFunctionalEvaluator = function(input) {
+  return {
+    func: input,
+    invert: false
+  }
 }
 
-var makeStringComparator = function(input) {
+var makeNumericalEvaluator = function(input) {
+  return {
+    func: function(item) {return item},
+    invert: (input < 0)
+  }
+};
+
+var makeStringEvaluator = function(input) {
   // Invert the sort if initial character is ! or ~.
-  var invertOrder;
+  var invert;
   if (input[0] === "!" || input[0] === "~") {
     input = input.slice(1);
-    invertOrder = true;
-  } else if (input[0] === ".") {
+    invert = true;
+  }
+
+  // Allow an initial dot: ".prop.subprop" as well as "prop.subprop"
+  if (input[0] === ".") {
     input = input.slice(1);
   }
 
   if (input[input.length - 1] === "?") {
-    var existential = true;
     input = input.slice(0, -1);
-  }
-
-  return function(a, b) {
-    var aValue = nestedProperty(a, input);
-    var bValue = nestedProperty(b, input);
-
-    // If our string ended with "?"
-    if (existential) {
-      aValue = (aValue != null)
-      bValue = (bValue != null)
-    }
-
-    if (aValue == bValue || (aValue == null && bValue == null)) {
-      return 0
-    } else if (aValue > bValue || bValue == null) {
-      return invertOrder ? -1 : 1;
-    } else {
-      return invertOrder ? 1 : -1;
-    }
-  };
-};
-
-var makeNumericalComparator = function(input) {
-  if (input < 0) {
-    return function(a, b) {
-      return b - a;
+    return {
+      func: function(item) {return nestedProperty(item, input) != null},
+      invert: invert
     }
   } else {
-    return function(a, b) {
-      return a - b;
+    return {
+      func: function(item) {return nestedProperty(item, input)},
+      invert: invert
     }
   }
 };
 
 var nestedProperty = function(obj, path) {
   if (path === "") return obj
-  var path = path.split(".")
+  path = path.split(".")
   var current = obj;
   while (path.length) {
     var nextKey = path.shift()
@@ -121,13 +128,14 @@ var nestedProperty = function(obj, path) {
       nextKey = nextKey.slice(0, indexOfOpenParenthesis);
     }
 
-    current = current[nextKey];
-    
     // If key is a function...
     if (args) {
-      current = current.apply(null, args);
+      current = current[nextKey].apply(current, args);
+    } else {
+      current = current[nextKey];
     }
-
+    
+    // Stop going through the path if we reach a null or undefined
     if (current == null) return null;
   }
   return current;
