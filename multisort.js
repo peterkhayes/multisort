@@ -2,7 +2,9 @@ module.exports = function(toSort, sortings) {
   // Allow partial application.
   if (arguments[1] == null) {
     sortings = toSort;
-    toSort = null;
+    return function(toSort) {
+      return module.exports(toSort, sortings)
+    }
   }
 
   if (!Array.isArray(sortings)) {
@@ -11,14 +13,6 @@ module.exports = function(toSort, sortings) {
 
   // Turn each sorting into a function that evalutes an item.
   var evaluators = sortings.map(makeEvaluator);
-  
-
-  // Allow partial application.
-  if (toSort == null) {
-    return function(toSort) {
-      return module.exports(toSort, sortings)
-    }
-  }
 
   // For each item, decorate it with the results of each evaluator.
   evaluateItems(toSort, evaluators);
@@ -47,6 +41,9 @@ module.exports = function(toSort, sortings) {
 
 };
 
+// For each item in the input array, transform it into an object with two keys.
+// 'item' stores the item, and 'values' is an array with the results of each
+// evaluator applied to the item.
 var evaluateItems = function(input, evaluators) {
   for (var i = 0, len = input.length; i < len; i++) {
     var item = input[i];
@@ -57,12 +54,15 @@ var evaluateItems = function(input, evaluators) {
   }
 }
 
+// The opposite of the above function.
+// Reverts the input array back to its original format.
 var revertItems = function(input) {
   for (var i = 0, len = input.length; i < len; i++) {
     input[i] = input[i].item;
   }
 }
 
+// Users can pass three types of criteria - functions, strings, and numbers.
 var makeEvaluator = function(input) {
   if (isFunction(input)) {
     return makeFunctionalEvaluator(input);
@@ -74,6 +74,7 @@ var makeEvaluator = function(input) {
   throw "Improper input for comparator!"
 };
 
+// Functional evaluators don't need any transformation, and can't have inverted order.
 var makeFunctionalEvaluator = function(input) {
   return {
     func: input,
@@ -81,6 +82,8 @@ var makeFunctionalEvaluator = function(input) {
   }
 }
 
+// Numerical evaluators sort the input directly if the criterion is non-negative,
+// and in inverted order if the criterion is negative.
 var makeNumericalEvaluator = function(input) {
   return {
     func: function(item) {return item},
