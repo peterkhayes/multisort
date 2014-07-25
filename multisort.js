@@ -1,10 +1,8 @@
 module.exports = function(toSort, sortings) {
   // Allow partial application.
   if (arguments[1] == null) {
+    var partialApplication = true;
     sortings = toSort;
-    return function(toSort) {
-      return module.exports(toSort, sortings)
-    }
   }
 
   if (!Array.isArray(sortings)) {
@@ -13,6 +11,29 @@ module.exports = function(toSort, sortings) {
 
   // Turn each sorting into a function that evalutes an item.
   var evaluators = sortings.map(makeEvaluator);
+
+  if (partialApplication) {
+    var sortFunction = function(toSort) {
+      return module.exports(toSort, sortings)
+    };
+    // To allow this to plug in to other sorting mechanisms.
+    sortFunction.comparator = function(a, b) {
+      for (var i = 0; i < evaluators.length; i++) {
+        var evaluator = evaluators[i];
+        var invert = evaluator.invert;
+        var aValue = evaluator.func(a);
+        var bValue = evaluator.func(b);
+
+        if (aValue > bValue) {
+          return invert ? -1 : 1;
+        } else if (bValue > aValue) {
+          return invert ? 1 : -1;
+        }
+      }
+      return 0;
+    }
+    return sortFunction;
+  }
 
   // For each item, decorate it with the results of each evaluator.
   evaluateItems(toSort, evaluators);

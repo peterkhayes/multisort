@@ -300,7 +300,7 @@ describe("Multisort Tests -", function() {
 
   });
 
-  describe("can be partially applied", function() {
+  describe("partial application - ", function() {
     it("three mathematical functions", function() {
       var sorter = multisort([
         function(a) {return a % 2},
@@ -314,6 +314,23 @@ describe("Multisort Tests -", function() {
 
       var input2 = [1, 5, 10, 25, 50, 100];
       sorter(input2);
+      assertObjectEquals(input2, [10, 100, 50, 1, 25, 5]);
+    });
+
+    it("returns a comparator for use with array.sort()", function() {
+      var sorter = multisort([
+        function(a) {return a % 2},
+        function(a) {return a % 3},
+        function(a) {return a}
+      ]);
+
+      var comparator = sorter.comparator;
+      var input1 = [8, 7, 6, 5, 4, 3, 2, 1];
+      input1.sort(comparator);
+      assertObjectEquals(input1, [6, 4, 2, 8, 3, 1, 7, 5]);
+
+      var input2 = [1, 5, 10, 25, 50, 100];
+      input2.sort(comparator);
       assertObjectEquals(input2, [10, 100, 50, 1, 25, 5]);
     });
   });
