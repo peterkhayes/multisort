@@ -165,6 +165,8 @@ var nestedProperty = function(obj, path) {
   return current;
 }
 
+var toString = Object.prototype.toString;
+
 var isFunction = function(input) {
   return toString.call(input) == '[object Function]';
 };
