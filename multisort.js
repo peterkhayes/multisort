@@ -163,18 +163,17 @@ var nestedProperty = function(obj, path) {
     if (current == null) return null;
   }
   return current;
-}
+};
 
-var toString = Object.prototype.toString;
 
 var isFunction = function(input) {
-  return toString.call(input) == '[object Function]';
+  return typeof input === "function";
 };
 
 var isNumber = function(input) {
-  return toString.call(input) == '[object Number]';
+  return typeof input === "number";
 };
 
 var isString = function(input) {
-  return (typeof input == 'string' || input instanceof String);
+  return typeof input === 'string';
 };
