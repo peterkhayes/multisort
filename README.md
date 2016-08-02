@@ -3,6 +3,10 @@ Multitest
 
 A small library for sorting arrays by multiple criteria.
 
+## Fork Details
+
+This fork adds support for loading in browser via bower with `bower install multisort`
+
 ## Installation
 
   npm install multisort --save
