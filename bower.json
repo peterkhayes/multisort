@@ -1,0 +1,29 @@
+{
+  "name": "multisort",
+  "main": "multisort.js",
+  "version": "0.5.2",
+  "homepage": "https://github.com/peterkhayes/multisort",
+  "authors": [
+    "Peter Hayes <peter.k.hayes@gmail.com> (http://peterkhayes.com/)"
+  ],
+  "description": "Sort an array using any number of separate, ranked criteria",
+  "keywords": [
+    "sort",
+    "sorting",
+    "multiple",
+    "multi",
+    "multisort",
+    "comparator"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "Makefile",
+    "package.json",
+    "test.js"
+  ]
+}
