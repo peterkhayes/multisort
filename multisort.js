@@ -1,18 +1,30 @@
 (function (root, factory) {
+  // From: https://github.com/umdjs/umd/blob/d31bb6ee7098715e019f52bdfe27b3e4bfd2b97e/templates/returnExports.js
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['lodash.map'], factory);
+    define([], factory);
   } else if (typeof module === 'object' && module.exports) {
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like environments that support module.exports,
     // like Node.
-    module.exports = factory(require('lodash.map'));
+    module.exports = factory();
   } else {
     // Browser globals (root is window)
-    var map = root._.map.bind(root._);
-    root.multisort = factory(map);
+    root.multisort = factory();
   }
-}(this, function (map) {
+}(this, function () {
+
+  function mapArray(items, cb) {
+    if (!Array.isArray(items)) {
+      throw new Error('Not supported');
+    }
+    var mappedItems = [];
+    for (var i = 0; i < items.length; i++) {
+      var mapped = cb(items[i]);
+      mappedItems.push(mapped);
+    }
+    return mappedItems;
+  }
 
   // For each item in the input array, transform it into an object with two keys.
   // 'item' stores the item, and 'values' is an array with the results of each
@@ -22,7 +34,7 @@
       var item = input[i];
       input[i] = {
         item: item,
-        values: map(evaluators, function(evaluator) {return evaluator.func(item)})
+        values: mapArray(evaluators, function(evaluator) {return evaluator.func(item)})
       }
     }
   }
@@ -142,7 +154,7 @@
     }
 
     // Turn each sorting into a function that evalutes an item.
-    var evaluators = map(sortings, makeEvaluator);
+    var evaluators = mapArray(sortings, makeEvaluator);
 
     if (partialApplication) {
       var sortFunction = function(toSort) {
