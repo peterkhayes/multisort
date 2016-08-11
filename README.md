@@ -7,6 +7,8 @@ A small library for sorting arrays by multiple criteria.
 
   npm install multisort --save
 
+  bower install multisort --save
+
 ## Basic Usage
 
   ```javascript
